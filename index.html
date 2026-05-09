@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataLens Quality Scanner</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <div class="app-shell">
+    <header class="hero">
+      <nav class="topbar">
+        <div class="brand">
+          <span class="brand-mark">DL</span>
+          <div>
+            <strong>DataLens</strong>
+            <small>Quality Scanner</small>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="ghost-btn" id="loadDemoBtn">Load demo</button>
+          <button class="ghost-btn danger" id="resetBtn">Reset</button>
+        </div>
+      </nav>
+      <section class="hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">Frontend-only CSV/XLSX profiler</span>
+          <h1>Scan messy datasets before modeling, reporting, or uploading.</h1>
+          <p>Detect missing values, duplicate rows, outliers, type issues, and class imbalance directly in your browser. Your data stays local.</p>
+          <div class="hero-actions">
+            <label class="primary-upload" for="fileInput">
+              <span>Upload CSV/XLSX</span>
+              <small>Drag-style file picker</small>
+            </label>
+            <input id="fileInput" type="file" accept=".csv,.xlsx,.xls,.txt" />
+            <button class="secondary-btn" id="downloadReportBtn" disabled>Download report</button>
+          </div>
+          <p class="tiny-note">CSV works offline. XLSX support uses the SheetJS browser parser loaded from CDN.</p>
+        </div>
+        <aside class="upload-card" id="dropZone">
+          <div class="pulse-ring"></div>
+          <div class="upload-icon">⇪</div>
+          <h2>Drop your data file</h2>
+          <p>CSV, XLSX, or simple TXT table. The scanner builds a profile instantly.</p>
+          <div class="file-meta" id="fileMeta">No file selected</div>
+        </aside>
+      </section>
+    </header>
+
+    <main>
+      <section class="status-strip" id="statusStrip">
+        <div>
+          <span class="status-dot"></span>
+          <strong id="statusText">Waiting for a dataset</strong>
+        </div>
+        <small id="scanTime">Upload a file or use demo data to begin.</small>
+      </section>
+
+      <section class="summary-grid">
+        <article class="metric-card reveal">
+          <small>Quality Score</small>
+          <strong id="qualityScore">--</strong>
+          <span id="qualityLabel">No scan yet</span>
+        </article>
+        <article class="metric-card reveal delay-1">
+          <small>Rows</small>
+          <strong id="rowCount">--</strong>
+          <span>usable records</span>
+        </article>
+        <article class="metric-card reveal delay-2">
+          <small>Columns</small>
+          <strong id="colCount">--</strong>
+          <span>detected fields</span>
+        </article>
+        <article class="metric-card reveal delay-3">
+          <small>Missing Cells</small>
+          <strong id="missingCount">--</strong>
+          <span id="missingPct">--</span>
+        </article>
+        <article class="metric-card reveal delay-4">
+          <small>Duplicates</small>
+          <strong id="duplicateCount">--</strong>
+          <span>identical rows</span>
+        </article>
+        <article class="metric-card reveal delay-5">
+          <small>Outliers</small>
+          <strong id="outlierCount">--</strong>
+          <span>IQR numeric flags</span>
+        </article>
+      </section>
+
+      <section class="workspace-grid">
+        <section class="panel profile-panel">
+          <div class="panel-head">
+            <div>
+              <span class="eyebrow">Column profile</span>
+              <h2>Missing values, uniqueness & data types</h2>
+            </div>
+            <input id="columnSearch" class="search-input" placeholder="Search columns..." />
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Column</th>
+                  <th>Type</th>
+                  <th>Missing</th>
+                  <th>Unique</th>
+                  <th>Outliers</th>
+                  <th>Risk</th>
+                </tr>
+              </thead>
+              <tbody id="profileBody">
+                <tr><td colspan="6" class="empty-cell">Upload data to view profiling results.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="panel control-panel">
+          <span class="eyebrow">Class balance</span>
+          <h2>Target imbalance check</h2>
+          <p>Select a categorical target column to inspect majority/minority balance.</p>
+          <select id="targetSelect" disabled>
+            <option>No dataset loaded</option>
+          </select>
+          <div class="balance-result" id="balanceResult">
+            <span>Choose a target column after upload.</span>
+          </div>
+          <div class="mini-bars" id="balanceBars"></div>
+        </aside>
+      </section>
+
+      <section class="insight-grid">
+        <article class="panel">
+          <div class="panel-head compact">
+            <div>
+              <span class="eyebrow">Priority issues</span>
+              <h2>Fix list</h2>
+            </div>
+          </div>
+          <div class="issue-list" id="issueList">
+            <div class="empty-state">No issues yet. Run a scan first.</div>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head compact">
+            <div>
+              <span class="eyebrow">Preview</span>
+              <h2>First 20 rows</h2>
+            </div>
+          </div>
+          <div class="table-wrap preview-wrap">
+            <table id="previewTable">
+              <tbody><tr><td class="empty-cell">Dataset preview will appear here.</td></tr></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
